@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
-import { jsPDF } from "jspdf";   // ✅ Added for PDF export
 import "./App.css";
 
 function Spinner() {
@@ -18,7 +17,9 @@ function Section({ title, body }) {
   );
 }
 
-/** Parse ===SECTION_NAME=== markers into sections */
+/** Parse ===SECTION_NAME=== markers into sections
+ * If no markers found returns null (so we display raw)
+ */
 function parseSectionsFromText(text) {
   if (!text || typeof text !== "string") return null;
   const regex = /===\s*([A-Z0-9_ ]+)\s*===/g;
@@ -104,6 +105,7 @@ Short call to action and next step.
 
     try {
       const res = await axios.post("http://localhost:5000/api/generate", { prompt }, { timeout: 120000 });
+      // Pollinations backend returns text; server returns { result } or { raw/sections }
       const data = res.data;
       const text = data.result || data.raw || data.resultText || JSON.stringify(data);
 
@@ -149,18 +151,6 @@ Short call to action and next step.
     setError("");
   };
 
-  // ✅ New function for exporting proposal to PDF
-  const handleExportPDF = () => {
-    if (!raw) {
-      alert("No proposal to export!");
-      return;
-    }
-    const doc = new jsPDF();
-    doc.setFontSize(12);
-    doc.text(raw, 10, 10, { maxWidth: 180 });
-    doc.save(`${form.clientName || "proposal"}.pdf`);
-  };
-
   return (
     <div className="container">
       <h1>AI Client Proposal Generator</h1>
@@ -184,7 +174,6 @@ Short call to action and next step.
           {loading && <Spinner />}
           <button onClick={handleCopy} disabled={!raw}>Copy</button>
           <button onClick={handleSaveLocal} disabled={!raw}>Save (Local)</button>
-          <button onClick={handleExportPDF} disabled={!raw}>Export PDF</button> {/* ✅ Added button */}
           <button onClick={handleClear}>Clear</button>
           <div className="saved-count">Saved: {savedCount}</div>
         </div>
