@@ -143,7 +143,8 @@ Short call to action and next step.
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/generate",
+          "https://ai-client-proposal-generator.onrender.com/api/generate",
+        //"http://localhost:5000/api/generate",
         { prompt },
         { timeout: 120000 }
       );
