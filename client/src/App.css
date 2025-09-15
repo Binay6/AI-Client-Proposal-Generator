@@ -1,23 +1,162 @@
-/* client/src/App.css */
-.container { max-width: 900px; margin: 20px auto; font-family: Arial, sans-serif; padding: 0 16px; }
-h1 { margin-bottom: 12px; }
-.card { background: #fff; border: 1px solid #e6e6e6; padding: 12px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,.03); }
-.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-.form-grid input, .form-grid select, .form-grid textarea { padding: 8px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px; }
-.form-grid textarea { grid-column: 1 / -1; }
-.actions { margin-top: 12px; display:flex; gap:8px; align-items:center; }
-.actions button { padding: 8px 14px; border-radius:6px; border: none; background:#2563eb; color:white; cursor:pointer; }
-.actions button:disabled { opacity:0.6; cursor:not-allowed; }
-.saved-count { margin-left:auto; color:#666; font-size:14px; }
+/* ================================
+   🎨 App.css
+   Custom Styles for Proposal Generator
+   ================================ */
 
-.spinner { border: 6px solid #f3f3f3; border-top: 6px solid #2563eb; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; display:inline-block; margin-left:8px; }
-@keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+body {
+  font-family: "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f7fa;
+  color: #333;
+}
 
-.section-card { padding:12px; border:1px solid #eee; border-radius:6px; margin-bottom:10px; background:#fafafa; }
-.section-title { margin:0 0 8px 0; font-size:16px; color:#1f2937; }
-.section-body { color:#111827; white-space:pre-wrap; line-height:1.45; }
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-.raw-output { background:#f7f7f7; padding:12px; border-radius:6px; white-space:pre-wrap; }
-.raw-render { background:#fff; padding:12px; border-radius:6px; border:1px solid #eee; }
-.error { margin-top:12px; color:#b91c1c; background:#fee2e2; padding:8px; border-radius:6px; border:1px solid #fca5a5; }
-.hint { color:#6b7280; }
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 30px;
+}
+
+.form-grid textarea {
+  grid-column: span 2;
+  resize: vertical;
+  
+}
+
+input,
+select,
+textarea {
+  width: 95%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 3px rgba(52, 152, 219, 0.4);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: #3498db;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.saved-count {
+  margin-left: auto;
+  font-size: 14px;
+  color: #555;
+}
+
+.section-card {
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 12px;
+  border-left: 4px solid #3498db;
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.section-body {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.raw-output {
+  background: #1e1e1e;
+  color: #f1f1f1;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 13px;
+}
+
+.raw-render {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hint {
+  text-align: center;
+  color: #777;
+  font-size: 14px;
+}

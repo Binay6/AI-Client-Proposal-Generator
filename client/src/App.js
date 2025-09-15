@@ -1,33 +1,56 @@
-// client/src/App.js
+
+// ===============================
+// 📄 App.js
+// Main React Component for AI Client Proposal Generator
+// ===============================
+
 import React, { useState } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
-import { jsPDF } from "jspdf";   // ✅ Added for PDF export
-import "./App.css";
+import { jsPDF } from "jspdf";   // ✅ Used for PDF export
+import html2canvas from "html2canvas";  // ✅ Used for PDF export with HTML
+import "./App.css";              // ✅ Custom styles
 
+// ===============================
+// 🔄 Spinner Component
+// Shown while proposal is being generated
+// ===============================
 function Spinner() {
   return <div className="spinner" aria-hidden="true" />;
 }
 
+// ===============================
+// 📦 Section Component
+// Displays each parsed proposal section in a styled card
+// ===============================
 function Section({ title, body }) {
   return (
     <div className="section-card">
       <h3 className="section-title">{title}</h3>
-      <div className="section-body"><ReactMarkdown>{body}</ReactMarkdown></div>
+      <div className="section-body">
+        <ReactMarkdown>{body}</ReactMarkdown>
+      </div>
     </div>
   );
 }
 
-/** Parse ===SECTION_NAME=== markers into sections */
+// ===============================
+// 📑 parseSectionsFromText
+// Splits the AI output into structured sections
+// (based on markers ===SECTION_NAME===)
+// ===============================
 function parseSectionsFromText(text) {
   if (!text || typeof text !== "string") return null;
   const regex = /===\s*([A-Z0-9_ ]+)\s*===/g;
   const matches = [];
   let m;
+
   while ((m = regex.exec(text)) !== null) {
     matches.push({ name: m[1].trim(), index: m.index, length: m[0].length });
   }
+
   if (matches.length === 0) return null;
+
   const sections = {};
   for (let i = 0; i < matches.length; i++) {
     const start = matches[i].index + matches[i].length;
@@ -35,10 +58,18 @@ function parseSectionsFromText(text) {
     const key = matches[i].name;
     sections[key] = text.slice(start, end).trim();
   }
+
   return sections;
 }
 
+// ===============================
+// 🎯 Main App Component
+// Handles form, API calls, state management & UI
+// ===============================
 export default function App() {
+  // -------------------------------
+  // 📝 State variables
+  // -------------------------------
   const [form, setForm] = useState({
     clientName: "",
     projectType: "",
@@ -56,8 +87,15 @@ export default function App() {
     return arr.length;
   });
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  // -------------------------------
+  // 🔄 Handlers
+  // -------------------------------
 
+  // Form field updates
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  // Build structured AI prompt
   const buildPrompt = (form) => {
     return `
 You are an expert enterprise proposal writer. Produce a client proposal using the exact markers shown below.
@@ -94,6 +132,7 @@ Short call to action and next step.
 `;
   };
 
+  // Generate proposal from backend
   const handleGenerate = async () => {
     setError("");
     setSections(null);
@@ -103,22 +142,29 @@ Short call to action and next step.
     const prompt = buildPrompt(form);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/generate", { prompt }, { timeout: 120000 });
+      const res = await axios.post(
+        "http://localhost:5000/api/generate",
+        { prompt },
+        { timeout: 120000 }
+      );
       const data = res.data;
-      const text = data.result || data.raw || data.resultText || JSON.stringify(data);
+      const text =
+        data.result || data.raw || data.resultText || JSON.stringify(data);
 
       setRaw(text);
       const parsed = parseSectionsFromText(text);
       setSections(parsed);
     } catch (err) {
       console.error("Generate error:", err);
-      const msg = err.response?.data?.error || err.message || "Unknown error";
+      const msg =
+        err.response?.data?.error || err.message || "Unknown error";
       setError("Failed to generate proposal: " + msg);
     } finally {
       setLoading(false);
     }
   };
 
+  // Copy raw proposal to clipboard
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(raw || "");
@@ -128,6 +174,7 @@ Short call to action and next step.
     }
   };
 
+  // Save proposal in browser storage
   const handleSaveLocal = () => {
     const list = JSON.parse(localStorage.getItem("savedProposals") || "[]");
     list.unshift({
@@ -142,49 +189,112 @@ Short call to action and next step.
     alert("Saved locally (browser storage).");
   };
 
+  // Reset all fields
   const handleClear = () => {
-    setForm({ clientName: "", projectType: "", budget: "", timeline: "", goals: "", tone: "professional" });
+    setForm({
+      clientName: "",
+      projectType: "",
+      budget: "",
+      timeline: "",
+      goals: "",
+      tone: "professional",
+    });
     setRaw("");
     setSections(null);
     setError("");
   };
 
-  // ✅ New function for exporting proposal to PDF
-  const handleExportPDF = () => {
-    if (!raw) {
-      alert("No proposal to export!");
+  // ===============================
+  // ✨ Export polished proposal as PDF
+  // ===============================
+  const handleExportPolishedPDF = () => {
+    const content = document.getElementById("proposal-polished");
+
+    if (!content) {
+      alert("No polished proposal to export!");
       return;
     }
-    const doc = new jsPDF();
-    doc.setFontSize(12);
-    doc.text(raw, 10, 10, { maxWidth: 180 });
-    doc.save(`${form.clientName || "proposal"}.pdf`);
+
+    html2canvas(content, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${form.clientName || "proposal"}-polished.pdf`);
+    });
   };
 
+  // ===============================
+  // 🎨 UI Rendering
+  // ===============================
   return (
     <div className="container">
-      <h1>AI Client Proposal Generator</h1>
+      <h1>📑 AI Client Proposal Generator</h1>
 
+      {/* ==========================
+          🔹 Input Form Section
+      =========================== */}
       <div className="card">
         <div className="form-grid">
-          <input name="clientName" value={form.clientName} onChange={handleChange} placeholder="Client name (e.g., Citibank)" />
-          <input name="projectType" value={form.projectType} onChange={handleChange} placeholder="Project type (e.g., Backend service)" />
-          <input name="budget" value={form.budget} onChange={handleChange} placeholder="Budget (optional)" />
-          <input name="timeline" value={form.timeline} onChange={handleChange} placeholder="Timeline (e.g., 3 months)" />
+          <input
+            name="clientName"
+            value={form.clientName}
+            onChange={handleChange}
+            placeholder="Client name (e.g., Citibank)"
+          />
+          <input
+            name="projectType"
+            value={form.projectType}
+            onChange={handleChange}
+            placeholder="Project type (e.g., Backend service)"
+          />
+          <input
+            name="budget"
+            value={form.budget}
+            onChange={handleChange}
+            placeholder="Budget (optional)"
+          />
+          <input
+            name="timeline"
+            value={form.timeline}
+            onChange={handleChange}
+            placeholder="Timeline (e.g., 3 months)"
+          />
           <select name="tone" value={form.tone} onChange={handleChange}>
             <option value="professional">Professional</option>
             <option value="concise">Concise</option>
             <option value="persuasive">Persuasive</option>
           </select>
-          <textarea name="goals" value={form.goals} onChange={handleChange} placeholder="Goals / short RFP details (paste client requirements here)" rows="4" />
+          <textarea
+            name="goals"
+            value={form.goals}
+            onChange={handleChange}
+            placeholder="Goals / short RFP details (paste client requirements here)"
+            rows="4"
+          />
         </div>
 
+        {/* ==========================
+            🔹 Action Buttons
+        =========================== */}
         <div className="actions">
-          <button onClick={handleGenerate} disabled={loading}>{loading ? "Generating..." : "Generate Proposal"}</button>
+          <button onClick={handleGenerate} disabled={loading}>
+            {loading ? "Generating..." : "Generate Proposal"}
+          </button>
           {loading && <Spinner />}
-          <button onClick={handleCopy} disabled={!raw}>Copy</button>
-          <button onClick={handleSaveLocal} disabled={!raw}>Save (Local)</button>
-          <button onClick={handleExportPDF} disabled={!raw}>Export PDF</button> {/* ✅ Added button */}
+          <button onClick={handleCopy} disabled={!raw}>
+            Copy
+          </button>
+          <button onClick={handleSaveLocal} disabled={!raw}>
+            Save (Local)
+          </button>
+          <button onClick={handleExportPolishedPDF} disabled={!raw}>
+            Export Polished PDF
+          </button>
           <button onClick={handleClear}>Clear</button>
           <div className="saved-count">Saved: {savedCount}</div>
         </div>
@@ -192,25 +302,41 @@ Short call to action and next step.
         {error && <div className="error">{error}</div>}
       </div>
 
+      {/* ==========================
+          🔹 Proposal Output
+      =========================== */}
       <div style={{ marginTop: 20 }}>
-        {sections ? (
-          <>
-            <h2>Proposal Sections</h2>
-            {Object.keys(sections).map((k) => (
-              <Section key={k} title={k.replace(/_/g, " ")} body={sections[k]} />
-            ))}
-            <h3>Raw Output</h3>
-            <pre className="raw-output">{raw}</pre>
-          </>
-        ) : raw ? (
-          <>
-            <h2>Generated Proposal</h2>
-            <div className="raw-render"><ReactMarkdown>{raw}</ReactMarkdown></div>
-          </>
-        ) : (
-          <p className="hint">Enter details and click <b>Generate Proposal</b>.</p>
-        )}
+        <div
+          id="proposal-polished"
+          style={{ padding: "20px", background: "#fff" }}
+        >
+          {sections ? (
+            <>
+              <h2>📂 Proposal Sections</h2>
+              {Object.keys(sections).map((k) => (
+                <Section
+                  key={k}
+                  title={k.replace(/_/g, " ")}
+                  body={sections[k]}
+                />
+              ))}
+              <h3>📝 Raw Output</h3>
+              <pre className="raw-output">{raw}</pre>
+            </>
+          ) : raw ? (
+            <>
+              <h2>📝 Generated Proposal</h2>
+              <div className="raw-render">
+                <ReactMarkdown>{raw}</ReactMarkdown>
+              </div>
+            </>
+          ) : (
+            <p className="hint">
+              Enter details and click <b>Generate Proposal</b>.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
-}
+} 

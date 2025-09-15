@@ -1,3 +1,4 @@
+
 // ===============================
 // 📄 App.js
 // Main React Component for AI Client Proposal Generator
@@ -203,19 +204,29 @@ Short call to action and next step.
     setError("");
   };
 
-  // Export proposal to PDF
-  const handleExportPDF = () => {
-    if (!raw) {
-      alert("No proposal to export!");
+  // ===============================
+  // ✨ Export polished proposal as PDF
+  // ===============================
+  const handleExportPolishedPDF = () => {
+    const content = document.getElementById("proposal-polished");
+
+    if (!content) {
+      alert("No polished proposal to export!");
       return;
     }
-    const doc = new jsPDF();
-    doc.setFontSize(12);
-    doc.text(raw, 10, 10, { maxWidth: 180 });
-    doc.save(`${form.clientName || "proposal"}.pdf`);
-  };
 
-  
+    html2canvas(content, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${form.clientName || "proposal"}-polished.pdf`);
+    });
+  };
 
   // ===============================
   // 🎨 UI Rendering
@@ -281,8 +292,8 @@ Short call to action and next step.
           <button onClick={handleSaveLocal} disabled={!raw}>
             Save (Local)
           </button>
-          <button onClick={handleExportPDF} disabled={!raw}>
-            Export PDF
+          <button onClick={handleExportPolishedPDF} disabled={!raw}>
+            Export Polished PDF
           </button>
           <button onClick={handleClear}>Clear</button>
           <div className="saved-count">Saved: {savedCount}</div>
@@ -295,31 +306,36 @@ Short call to action and next step.
           🔹 Proposal Output
       =========================== */}
       <div style={{ marginTop: 20 }}>
-        {sections ? (
-          <>
-            <h2>📂 Proposal Sections</h2>
-            {Object.keys(sections).map((k) => (
-              <Section
-                key={k}
-                title={k.replace(/_/g, " ")}
-                body={sections[k]}
-              />
-            ))}
-            <h3>📝 Raw Output</h3>
-            <pre className="raw-output">{raw}</pre>
-          </>
-        ) : raw ? (
-          <>
-            <h2>📝 Generated Proposal</h2>
-            <div className="raw-render">
-              <ReactMarkdown>{raw}</ReactMarkdown>
-            </div>
-          </>
-        ) : (
-          <p className="hint">
-            Enter details and click <b>Generate Proposal</b>.
-          </p>
-        )}
+        <div
+          id="proposal-polished"
+          style={{ padding: "20px", background: "#fff" }}
+        >
+          {sections ? (
+            <>
+              <h2>📂 Proposal Sections</h2>
+              {Object.keys(sections).map((k) => (
+                <Section
+                  key={k}
+                  title={k.replace(/_/g, " ")}
+                  body={sections[k]}
+                />
+              ))}
+              <h3>📝 Raw Output</h3>
+              <pre className="raw-output">{raw}</pre>
+            </>
+          ) : raw ? (
+            <>
+              <h2>📝 Generated Proposal</h2>
+              <div className="raw-render">
+                <ReactMarkdown>{raw}</ReactMarkdown>
+              </div>
+            </>
+          ) : (
+            <p className="hint">
+              Enter details and click <b>Generate Proposal</b>.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
