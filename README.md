@@ -1,124 +1,110 @@
-📄 AI Client Proposal Generator
+# AI Client Proposal Generator
 
-An AI-powered system to automatically generate client proposals using LLM (GenAI) models.
-The project is designed for enterprise environments (like TCS hackathons) with a focus on data security, automation, and scalability.
+An AI-powered web application that helps turn client requirements or problem statements into structured proposal drafts.
 
-🚀 Features
+The project was built as a hands-on GenAI application, combining an AI-powered workflow with a React frontend and Node.js/Express backend.
 
-🤖 AI Proposal Generation – Automatically drafts client proposals based on input problem statements.
+## 🚀 What it demonstrates
 
-🔒 Data Security First – All processing happens inside enterprise systems (no sensitive data sent outside).
+- **AI-assisted proposal generation** from client requirements
+- Structured proposal output for sections such as problem statement, solution, benefits and timeline
+- **React** frontend for the user interface
+- **Node.js + Express** backend for application/API logic
+- API-based AI integration
+- Proposal export functionality
+- A deployed web application for trying the project
 
-📂 Structured Proposal Format – Standardized sections like Introduction, Problem Statement, Solution, Benefits, and Timeline.
+## 🧠 GenAI Focus
 
-🛠 Configurable Templates – Easily update proposal structures to meet different client needs.
+This project is an early step in my GenAI engineering journey.
 
-📊 Export Options – Download proposals in PDF / DOCX.
+The emphasis is not only on calling an LLM, but on building an actual application around an AI workflow:
 
-🌐 Future Scope – Integration with internal knowledge base and project repositories.
+**User requirements → AI generation → structured proposal → refinement → export**
 
-🏗 Tech Stack
+Future iterations will focus on stronger prompting, reliability, evaluation, document grounding and more production-oriented AI architecture.
 
-Frontend: React.js
+## 🛠️ Tech Stack
 
-Backend: Node.js + Express
+**Frontend**
+- React
+- JavaScript
+- CSS / UI components
 
-Database: MongoDB / Firestore (configurable)
+**Backend**
+- Node.js
+- Express
 
-AI Engine: LLMs (Pollinations API / Local LLM integration for enterprise security)
+**AI / APIs**
+- LLM API integration
+- Axios
 
-Other Tools:
+**Document / Export**
+- jsPDF
 
-Axios (API requests)
+## 📁 Project Structure
 
-jsPDF (Export to PDF)
-
-Tailwind / CSS (UI)
-
-📂 Project Structure
+```text
 AI-Client-Proposal-Generator/
-│── backend/          # Node.js + Express server
-│── frontend/         # React.js client
-│── models/           # Database schemas
-│── routes/           # API endpoints
-│── public/           # Static assets
-│── README.md         # Project documentation
-│── package.json      # Dependencies
+├── client/          # React frontend
+├── server/          # Node.js + Express backend
+└── README.md
+```
 
-⚡ Quick Start
-1️⃣ Clone the Repository
+## 🌐 Live Demo
+
+[Open the deployed application](https://ai-client-proposal-generator.vercel.app)
+
+## ▶️ Running Locally
+
+### 1. Clone the repository
+
+```bash
 git clone https://github.com/Binay6/AI-Client-Proposal-Generator.git
 cd AI-Client-Proposal-Generator
+```
 
-2️⃣ Install Dependencies
+### 2. Install frontend dependencies
+
+```bash
+cd client
 npm install
+```
 
-3️⃣ Run Development Servers
+### 3. Install backend dependencies
 
-Frontend:
+Open another terminal:
 
-cd frontend
-npm start
+```bash
+cd server
+npm install
+```
 
+### 4. Configure environment variables
 
-Backend:
+Create your own environment file locally for the backend and add the required API configuration.
 
-cd backend
-npm run dev
+**Do not commit API keys or other secrets to GitHub.**
 
-📘 Usage
+### 5. Start the application
 
-Enter client problem statement or requirements.
+Start the backend and frontend using the project's development scripts.
 
-AI engine processes input and generates a draft proposal.
+## 🔮 Future Improvements
 
-Edit or refine the proposal.
+- Retrieval-augmented proposal generation
+- Grounding proposals in approved company/project knowledge
+- Better output evaluation and validation
+- More robust document generation
+- Improved error handling and observability
+- Production-oriented deployment architecture
 
-Export to PDF/DOCX and share with the client.
+## 📌 Why I Built This
 
-📌 Example Input / Output
+This project represents the transition from learning GenAI concepts to applying them in software.
 
-Input:
+It is one of the projects I am using to build toward **GenAI / AI Engineering** roles.
 
-Client: XYZ Bank
-Problem: Needs automated fraud detection system for transactions.
+---
 
-
-Generated Output (Proposal):
-
-Introduction
-
-Problem Statement
-
-Proposed AI/ML Solution
-
-Expected Benefits (Efficiency, Security, Cost Reduction)
-
-Implementation Timeline
-
-Conclusion
-
-🔮 Future Enhancements
-
-📝 Multi-language proposal generation.
-
-📊 Integration with project dashboards.
-
-🧠 Fine-tuned local LLMs for industry-specific proposals.
-
-🔗 Collaboration features for team editing.
-
-🤝 Contributing
-
-Fork the repo.
-
-Create a new branch (feature/new-idea).
-
-Commit changes.
-
-Push and create a PR.
-
-📜 License
-
-MIT License – free to use and modify.﻿# AI-Client-Proposal-Generator
-
+**Author:** [Binay Maity](https://github.com/Binay6)
